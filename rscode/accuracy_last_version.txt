@@ -1,0 +1,43 @@
+# # 计算准确性
+# def calculate_precision(final_recommendations, R_test):
+#     test_ratings = create_test_ratings_from_matrix(R_test, threshold)
+
+#     total_items_count = sum(len(items) for items in test_ratings.values())
+
+#     total_correct = 0
+#     total_recommendations = 0
+
+#     for user, recommended_items in final_recommendations.items():
+#         actual_items = test_ratings[user]
+#         correct_items = [item for item in recommended_items if item in actual_items]
+#         total_correct += len(correct_items)
+#         total_recommendations += len(recommended_items)
+
+#     precision = total_correct / total_recommendations
+#     recall = total_correct / total_items_count
+#     return precision, recall
+
+def calculate_precision(final_recommendations, R_test, topN3):
+    test_ratings = create_test_ratings_from_matrix(R_test, threshold)
+
+    total_items_count = 0
+    total_correct = 0
+    total_recommendations = 0
+
+    for user, recommended_items in final_recommendations.items():
+        actual_items = test_ratings[user]
+
+        # 只在 actual_items 的长度大于 topN3 时计算 Precision 和 Recall
+        if len(actual_items) > topN3:
+            correct_items = [item for item in recommended_items if item in actual_items]
+            total_correct += len(correct_items)
+            total_recommendations += len(recommended_items)
+            total_items_count += len(actual_items)
+
+    precision = total_correct / total_recommendations
+    recall = total_correct / total_items_count
+    return precision, recall
+
+precision, recall = calculate_precision(final_recommendations, R_test, topN3)
+
+F1_value = 2 * precision * recall / (precision + recall)
